@@ -6,6 +6,7 @@ defmodule Soap.Response.Parser do
   import SweetXml, only: [xpath: 2, sigil_x: 2]
 
   @soap_version_namespaces %{
+    "1.0" => :"http://schemas.xmlsoap.org/soap/envelope/",
     "1.1" => :"http://schemas.xmlsoap.org/soap/envelope/",
     "1.2" => :"http://www.w3.org/2003/05/soap-envelope"
   }

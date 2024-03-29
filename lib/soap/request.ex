@@ -14,6 +14,7 @@ defmodule Soap.Request do
 
   def call(wsdl, operation, {soap_headers, params}, request_headers, opts) do
     url = get_url(wsdl)
+    operation = put_operation_prefix(operation)
     request_headers = Headers.build(wsdl, operation, request_headers)
     body = Params.build_body(wsdl, operation, params, soap_headers)
 
@@ -31,5 +32,16 @@ defmodule Soap.Request do
   @spec get_url(wsdl :: map()) :: String.t()
   defp get_url(wsdl) do
     wsdl.endpoint
+  end
+
+  @spec put_operation_prefix(operation :: String.t()) :: String.t()
+  defp put_operation_prefix(operation) do
+    case Application.get_env(:soap, :globals)[:operation_prefix] do
+      nil ->
+        operation
+
+      prefix ->
+        prefix <> ":" <> operation
+    end
   end
 end

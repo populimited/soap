@@ -3,6 +3,7 @@ defmodule Soap.Wsdl do
   Provides functions for parsing wsdl file.
   """
   @soap_version_namespaces %{
+    "1.0" => :"http://schemas.xmlsoap.org/wsdl/soap/",
     "1.1" => :"http://schemas.xmlsoap.org/wsdl/soap/",
     "1.2" => :"http://schemas.xmlsoap.org/wsdl/soap12/"
   }

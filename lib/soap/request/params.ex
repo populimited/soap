@@ -9,6 +9,7 @@ defmodule Soap.Request.Params do
     "xmlns:xsi" => "http://www.w3.org/2001/XMLSchema-instance"
   }
   @soap_version_namespaces %{
+    "1.0" => "http://schemas.xmlsoap.org/soap/envelope/",
     "1.1" => "http://schemas.xmlsoap.org/soap/envelope/",
     "1.2" => "http://www.w3.org/2003/05/soap-envelope"
   }
@@ -299,9 +300,14 @@ defmodule Soap.Request.Params do
 
   @spec build_action_attribute(map(), String.t()) :: map()
   defp build_action_attribute(wsdl, operation) do
-    action_attribute_namespace = get_action_namespace(wsdl, operation)
-    action_attribute_value = wsdl[:namespaces][action_attribute_namespace][:value]
-    prepare_action_attribute(action_attribute_namespace, action_attribute_value)
+    case get_action_namespace(wsdl, operation) do
+      "" ->
+        %{}
+
+      action_attribute_namespace ->
+        action_attribute_value = wsdl[:namespaces][action_attribute_namespace][:value]
+        prepare_action_attribute(action_attribute_namespace, action_attribute_value)
+    end
   end
 
   defp prepare_action_attribute(_action_attribute_namespace, nil), do: %{}
