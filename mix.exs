@@ -45,7 +45,7 @@ defmodule Soap.MixProject do
 
   defp deps do
     [
-      {:sweet_xml, "~> 0.6"},
+      {:sweet_xml, "~> 0.7.4"},
       {:dialyxir, "~> 1.1.0", only: [:dev, :test], runtime: false},
 
       # Http && XML
