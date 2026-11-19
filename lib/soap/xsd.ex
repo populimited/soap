@@ -29,9 +29,9 @@ defmodule Soap.Xsd do
     request_opts = Keyword.merge([follow_redirect: true, max_redirect: 5], opts)
 
     case Request.get_http_client().get(path, [], request_opts) do
-      {:ok, %HTTPoison.Response{status_code: 404}} -> {:error, :not_found}
-      {:ok, %HTTPoison.Response{body: body}} -> parse_xsd(body)
-      {:error, %HTTPoison.Error{reason: reason}} -> {:error, reason}
+      {:ok, %{status_code: 404}} -> {:error, :not_found}
+      {:ok, %{body: body}} -> parse_xsd(body)
+      {:error, reason} -> {:error, reason}
     end
   end
 

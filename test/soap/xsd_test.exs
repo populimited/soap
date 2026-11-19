@@ -28,19 +28,19 @@ defmodule Soap.XsdTest do
   end
 
   test "when file available on external resource" do
-    with_mock HTTPoison, get: fn _, _, _ -> {:ok, %HTTPoison.Response{body: @raw_xsd, status_code: 200}} end do
+    with_mock Soap.HTTPClient.Req, get: fn _, _, _ -> {:ok, %{body: @raw_xsd, status_code: 200}} end do
       assert Xsd.parse("https://example.com") == {:ok, @parsed_xsd}
     end
   end
 
   test "when file not found on external resource" do
-    with_mock HTTPoison, get: fn _, _, _ -> {:ok, %HTTPoison.Response{body: "", status_code: 404}} end do
+    with_mock Soap.HTTPClient.Req, get: fn _, _, _ -> {:ok, %{body: "", status_code: 404}} end do
       assert Xsd.parse("https://example.com") == {:error, :not_found}
     end
   end
 
   test "when response is error on external resource" do
-    with_mock HTTPoison, get: fn _, _, _ -> {:error, %HTTPoison.Error{reason: :forbidden}} end do
+    with_mock Soap.HTTPClient.Req, get: fn _, _, _ -> {:error, :forbidden} end do
       assert Xsd.parse("https://example.com") == {:error, :forbidden}
     end
   end

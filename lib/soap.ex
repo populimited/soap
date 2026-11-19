@@ -1,6 +1,6 @@
 defmodule Soap do
   @moduledoc """
-  The SOAP client for Elixir based on `HTTPoison` (for send requests) and `SweetXml` (for XML parsing).
+  The SOAP client for Elixir based on `Req` (for send requests) and `SweetXml` (for XML parsing).
 
   Soap contains 5 main modules:
 
@@ -11,7 +11,7 @@ defmodule Soap do
     * `Soap.Request` - Provides functionality for build and calling requests.
       Contains Request.Headers and Soap.Params submodules for build headers and
       build body with parameters validation respectively.  This module is a
-      wrapper over HTTPoison. It send requests and handle them.
+      wrapper over `Req`. It send requests and handle them.
 
     * `Soap.Response` - Handle soap response and handle them. It provides
       functionality for parsing xml-like body and transform it to comfortable
@@ -68,7 +68,8 @@ defmodule Soap do
   - `endpoint`: Endpoint to be used for the request.  Defaults to the endpoint
     specified in the WSDL file.  Useful for (e.g.) sending a request to a mock
     server during testing.
-  - `opts`: any options for `HTTPoison.Request` and the following parsing options:
+  - `opts`: any options for the HTTP client (Req by default, see
+    `Soap.HTTPClient.Req`) and the following parsing options:
 
     * `:soap_version` - Specifies SOAP version for parsing.
     * `:allow_empty_soap_actions` - Allows SOAP operations with an empty
@@ -98,7 +99,7 @@ defmodule Soap do
   - `action`: Soap action to be called. Use `Soap.operations/1` to get a list of available actions
   - `params`: Parameters to build the body of a SOAP request.
   - `headers`: Custom request headers.
-  - `opts`: HTTPoison options.
+  - `opts`: HTTP client options (Req by default).
 
   ## Examples
 
@@ -133,13 +134,11 @@ defmodule Soap do
     wsdl.operations
   end
 
-  defp handle_response(
-         {:ok, %HTTPoison.Response{body: body, headers: headers, request_url: request_url, status_code: status_code}}
-       ) do
+  defp handle_response({:ok, %{body: body, headers: headers, request_url: request_url, status_code: status_code}}) do
     {:ok, %Response{body: body, headers: headers, request_url: request_url, status_code: status_code}}
   end
 
-  defp handle_response({:error, %HTTPoison.Error{reason: reason}}) do
+  defp handle_response({:error, reason}) do
     {:error, reason}
   end
 

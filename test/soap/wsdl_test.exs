@@ -271,7 +271,7 @@ defmodule Soap.WsdlTest do
   end
 
   test "#parse_from_url returns {:ok, wsdl}" do
-    with_mock HTTPoison, get!: fn _, _, _ -> %HTTPoison.Response{body: @wsdl} end do
+    with_mock Soap.HTTPClient.Req, get!: fn _, _, _ -> %{body: @wsdl} end do
       assert Wsdl.parse_from_url("any_url") == {:ok, @parsed_wsdl}
     end
   end
@@ -319,7 +319,7 @@ defmodule Soap.WsdlTest do
       wsdl_path = Fixtures.get_file_path("wsdl/CyberSourceTransactionWithURLImportSchema.wsdl")
       xsd_path = "https://ics2wsa.ic3.com/commerce/1.x/transactionProcessor/CyberSourceTransaction_1.147.xsd"
 
-      with_mock HTTPoison, get: fn ^xsd_path, _, _ -> {:ok, %HTTPoison.Response{body: raw_xsd, status_code: 200}} end do
+      with_mock Soap.HTTPClient.Req, get: fn ^xsd_path, _, _ -> {:ok, %{body: raw_xsd, status_code: 200}} end do
         {:ok, parsed_wsdl} = Wsdl.parse_from_file(wsdl_path)
         assert parsed_wsdl.validation_types == xsd_types
       end
@@ -337,9 +337,9 @@ defmodule Soap.WsdlTest do
       xsd_path = "https://ics2wsa.ic3.com:443/commerce/1.x/transactionProcessor/example.xsd"
       raw_wsdl = Fixtures.load_wsdl("CyberSourceTransactionWithFileImportSchema.wsdl")
 
-      with_mock HTTPoison,
-        get!: fn ^wsdl_path, _, _ -> %HTTPoison.Response{body: raw_wsdl, status_code: 200} end,
-        get: fn ^xsd_path, _, _ -> {:ok, %HTTPoison.Response{body: raw_xsd, status_code: 200}} end do
+      with_mock Soap.HTTPClient.Req,
+        get!: fn ^wsdl_path, _, _ -> %{body: raw_wsdl, status_code: 200} end,
+        get: fn ^xsd_path, _, _ -> {:ok, %{body: raw_xsd, status_code: 200}} end do
         {:ok, parsed_wsdl} = Wsdl.parse_from_url(wsdl_path)
         assert parsed_wsdl.validation_types == xsd_types
       end
@@ -350,9 +350,9 @@ defmodule Soap.WsdlTest do
       xsd_path = "https://ics2wsa.ic3.com/commerce/1.x/transactionProcessor/CyberSourceTransaction_1.147.xsd"
       raw_wsdl = Fixtures.load_wsdl("CyberSourceTransactionWithURLImportSchema.wsdl")
 
-      with_mock HTTPoison,
-        get!: fn ^wsdl_path, _, _ -> %HTTPoison.Response{body: raw_wsdl, status_code: 200} end,
-        get: fn ^xsd_path, _, _ -> {:ok, %HTTPoison.Response{body: raw_xsd, status_code: 200}} end do
+      with_mock Soap.HTTPClient.Req,
+        get!: fn ^wsdl_path, _, _ -> %{body: raw_wsdl, status_code: 200} end,
+        get: fn ^xsd_path, _, _ -> {:ok, %{body: raw_xsd, status_code: 200}} end do
         {:ok, parsed_wsdl} = Wsdl.parse_from_url(wsdl_path)
         assert parsed_wsdl.validation_types == xsd_types
       end
