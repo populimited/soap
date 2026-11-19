@@ -26,10 +26,10 @@ defmodule Soap.RequestTest do
     {_, wsdl} = Fixtures.get_file_path("wsdl/SendService.wsdl") |> Wsdl.parse_from_file()
     operation = "SendMessage"
     params = %{inCommonParms: [{"userID", "WSPB"}]}
-    http_poison_result = {:ok, %HTTPoison.Response{status_code: 200, body: "Anything"}}
+    http_result = {:ok, %{status_code: 200, body: "Anything"}}
 
-    with_mock HTTPoison, post: fn _, _, _, _ -> http_poison_result end do
-      assert(Request.call(wsdl, operation, params) == http_poison_result)
+    with_mock Soap.HTTPClient.Req, post: fn _, _, _, _ -> http_result end do
+      assert(Request.call(wsdl, operation, params) == http_result)
     end
   end
 
@@ -37,11 +37,11 @@ defmodule Soap.RequestTest do
     {_, wsdl} = Fixtures.get_file_path("wsdl/SendService.wsdl") |> Wsdl.parse_from_file()
     operation = "SendMessage"
     params = %{inCommonParms: [{"userID", "WSPB"}]}
-    http_poison_result = {:ok, %HTTPoison.Response{status_code: 200, body: "Anything"}}
-    hackney = [basic_auth: {"user", "pass"}]
+    http_result = {:ok, %{status_code: 200, body: "Anything"}}
+    req_opts = [receive_timeout: 1000]
 
-    with_mock HTTPoison, post: fn _, _, _, [hackney: ^hackney] -> http_poison_result end do
-      assert(Request.call(wsdl, operation, params, [], hackney: hackney) == http_poison_result)
+    with_mock Soap.HTTPClient.Req, post: fn _, _, _, ^req_opts -> http_result end do
+      assert(Request.call(wsdl, operation, params, [], receive_timeout: 1000) == http_result)
     end
   end
 
@@ -58,7 +58,7 @@ defmodule Soap.RequestTest do
     operation = "sayHello"
     params = {%{token: "barbaz"}, %{body: "Hello John"}}
 
-    with_mock HTTPoison, post: fn _, body, _, _ -> body end do
+    with_mock Soap.HTTPClient.Req, post: fn _, body, _, _ -> body end do
       assert(Request.call(wsdl, operation, params) == @request_with_header)
     end
   end
@@ -68,7 +68,7 @@ defmodule Soap.RequestTest do
     operation = "sayHello"
     params = {%{token: "barbaz"}, {:body, %{foo: "bar"}, "Hello John"}}
 
-    with_mock HTTPoison, post: fn _, body, _, _ -> body end do
+    with_mock Soap.HTTPClient.Req, post: fn _, body, _, _ -> body end do
       assert Request.call(wsdl, operation, params) ==
                String.replace(@request_with_header, "<body>", ~s{<body foo="bar">})
     end

@@ -7,7 +7,8 @@ defmodule Soap.Request do
   @doc """
   Executing with parsed wsdl and headers with body map.
 
-  Calling HTTPoison request by Map with method, url, body, headers, options keys.
+  Calling the configured HTTP client (see `get_http_client/0`) with method,
+  url, body, headers and options keys.
   """
   @spec call(wsdl :: map(), operation :: String.t(), params :: any(), headers :: any(), opts :: any()) :: any()
   def call(wsdl, operation, soap_headers_and_params, request_headers \\ [], opts \\ [])
@@ -24,9 +25,17 @@ defmodule Soap.Request do
   def call(wsdl, operation, params, request_headers, opts),
     do: call(wsdl, operation, {%{}, params}, request_headers, opts)
 
-  @spec get_http_client() :: HTTPoison.Base
+  @doc """
+  The HTTP client used for requests and WSDL/XSD fetching.
+
+  Configured with the `:http_client` key of the `:globals` application
+  config; defaults to `Soap.HTTPClient.Req`. The module must expose
+  `get!/3`, `get/3` and `post/4` returning normalized responses — see
+  `Soap.HTTPClient.Req` for the contract.
+  """
+  @spec get_http_client() :: module()
   def get_http_client do
-    Application.get_env(:soap, :globals)[:http_client] || HTTPoison
+    Application.get_env(:soap, :globals)[:http_client] || Soap.HTTPClient.Req
   end
 
   @spec get_url(wsdl :: map()) :: String.t()
