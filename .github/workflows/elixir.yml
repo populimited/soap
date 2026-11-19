@@ -67,4 +67,6 @@ jobs:
         run: mix dialyzer --no-check --ignore-exit-status
 
       - name: Run tests
-        run: mix coveralls.github
+        # Local coverage report only: this fork is not registered on
+        # coveralls.io, so the upload step would fail.
+        run: mix coveralls
